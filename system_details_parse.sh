@@ -259,6 +259,9 @@ log_command "timedatectl" "timedatectl"
 log_command "chronyc tracking" "chronyc tracking"
 log_command "ip a" "ip a"
 log_command "route -n || ip route" "route -n || ip route"
+log_command "cat /etc/hosts" "cat /etc/hosts"
+log_command "cat /etc/resolv.conf" "cat /etc/resolv.conf"
+log_command "ls -l /etc/resolv.conf" "ls -l /etc/resolv.conf"
 check_os_firewall
 
 # Check init system and log appropriate command
