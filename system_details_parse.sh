@@ -311,7 +311,7 @@ log_command "free -h" "free -h"
 log_command "lsmod" "lsmod"
 log_command "ls -lart /dev" "ls -lart /dev"
 log_command "ls -la /etc/udev/rules.d/" "ls -la /etc/udev/rules.d/"
-log_command "tail -n 100 /etc/udev/rules.d/*" "tail -n 100 /etc/udev/rules.d/*"
+log_command "tail -n +1 /etc/udev/rules.d/*" "tail -n +1 /etc/udev/rules.d/*"
 
 
 echo -e "\n <<<<<<<<<<<<<<<<<<<<<<<<<< Directories >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"  >> "$LOG_FILE" 2>&1
