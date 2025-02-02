@@ -36,6 +36,7 @@ It checks the following:
    - Kernel source directories
    - Module directories
    - GRUB configuration directories
+   - EFI system details
 
 4. SELinux:
    - SELinux status and configuration
@@ -43,6 +44,7 @@ It checks the following:
 5. BIOS / UEFI / SecureBoot:
    - Boot mode (UEFI or Legacy BIOS)
    - EFI boot manager details
+   - UEFI variables
    - Secure Boot status
 
 6. GRUB Configuration Files:
@@ -344,7 +346,7 @@ log_command "ls -la /sys/firmware/efi/efivars" "ls -la /sys/firmware/efi/efivars
 log_command "/usr/bin/mokutil --sb-state || mokutil --sb-state" "/usr/bin/mokutil --sb-state || mokutil --sb-state"
 
 
-echo -e " <<<<<<<<<<<<<<<<<<<<<<<<<< GRUB config files >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"  >> "$LOG_FILE" 2>&1
+echo -e " <<<<<<<<<<<<<<<<<<<<<<<<<< GRUB Configuration Files >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"  >> "$LOG_FILE" 2>&1
 
 # Check if each GRUB configuration file exists before logging its content
 grub_files=(
