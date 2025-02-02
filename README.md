@@ -8,68 +8,67 @@ This script gathers various Linux system details and logs them to an output file
 It checks the following:
 
 1. General System Information:
-   - OS release information
-   - Kernel version
-   - Hostname and system time
-   - Network configuration and routing
-   - Firewall rules
-   - System services
-   - System hardware details
-   - Recent shutdown and reboot history
-   - Proxy environment variables
+    - OS release information
+    - Kernel version
+    - Hostname and system time
+    - Network configuration and routing
+    - Firewall rules
+    - System services
+    - System hardware details
+    - Recent shutdown and reboot history
+    - Proxy environment variables
 
 2. Disks / Devices / LVM / Multipath / Mount / Memory / Drivers/Modules:
-   - Boot device
-   - Block Devices and Filesystems
-   - Partition Tables
-   - Logical Volume Manager (LVM) details
-   - Disks with size less than 1G
-   - Multipath and Device Mapper Information
-   - Mounted filesystems
-   - Disk usage
-   - Memory usage
-   - Loaded kernel modules
+    - Boot device
+    - Block Devices and Filesystems
+    - Partition Tables
+    - Logical Volume Manager (LVM) details
+    - Disks with size less than 1G
+    - Multipath and Device Mapper Information
+    - Mounted filesystems
+    - Disk usage
+    - Memory usage
+    - Loaded kernel modules
 
 3. Directories:
-   - Kernel source directories
-   - Module directories
-   - GRUB configuration directories
-   - EFI system details
+    - Kernel source directories
+    - Module directories
+    - GRUB configuration directories
+    - EFI system details
 
 4. SELinux:
-   - SELinux status and configuration
+    - SELinux status and configuration
 
 5. BIOS / UEFI / SecureBoot:
-   - Boot mode (UEFI or Legacy BIOS)
-   - EFI boot manager details
-   - UEFI variables
-   - Secure Boot status
+    - Boot mode (UEFI or Legacy BIOS)
+    - EFI boot manager details
+    - UEFI variables
+    - Secure Boot status
 
 6. GRUB Configuration Files:
-   - GRUB configuration files and environment
+    - GRUB configuration files and environment
 
 7. Packages:
-   - Required tools
-   - Installed GRUB2 packages
-   - Installed kernel packages
-   - Installed mkinitrd and dracut packages
-   - Installed and available Linux headers
+    - Required tools
+    - Installed GRUB2 packages
+    - Installed kernel packages
+    - Installed mkinitrd and dracut packages
+    - Installed and available Linux headers
 
 8. Initramfs/initrd/Drivers:
-   - Initramfs/initrd contents
-   - Kernel module information
+    - Initramfs/initrd contents
+    - Kernel module information
 
 9. Replication Agent:
-   - AWS replication agent details (if installed)
-   - Running processes related to AWS replication Agent
-   - Network connections related to AWS replication Agent
+    - AWS replication agent details (if installed)
+    - Running processes related to AWS replication Agent
+    - Network connections related to AWS replication Agent
 
 10. Permissions:
-   - File attributes and permissions for critical files
-   - Sudoers configuration
-   - User and group information for 'aws-replication'
-   - The presence and permissions of 'su' and 'sudo'
-
+    - File attributes and permissions for critical files
+    - Sudoers configuration
+    - User and group information for 'aws-replication'
+    - The presence and permissions of 'su' and 'sudo'
 
 ## Usage
 
@@ -107,67 +106,67 @@ This script gathers various system details and logs them to /var/log/system_deta
 It checks the following:
 
 1. General System Information:
-   - OS release information
-   - Kernel version
-   - Hostname and system time
-   - Network configuration and routing
-   - Firewall rules
-   - System services
-   - System hardware details
-   - Recent shutdown and reboot history
-   - Proxy environment variables
+    - OS release information
+    - Kernel version
+    - Hostname and system time
+    - Network configuration and routing
+    - Firewall rules
+    - System services
+    - System hardware details
+    - Recent shutdown and reboot history
+    - Proxy environment variables
 
 2. Disks / Devices / LVM / Multipath / Mount / Memory / Drivers/Modules:
-   - Boot device
-   - Block Devices and Filesystems
-   - Partition Tables
-   - Logical Volume Manager (LVM) details
-   - Disks with size less than 1G
-   - Multipath and Device Mapper Information
-   - Mounted filesystems
-   - Disk usage
-   - Memory usage
-   - Loaded kernel modules
+    - Boot device
+    - Block Devices and Filesystems
+    - Partition Tables
+    - Logical Volume Manager (LVM) details
+    - Disks with size less than 1G
+    - Multipath and Device Mapper Information
+    - Mounted filesystems
+    - Disk usage
+    - Memory usage
+    - Loaded kernel modules
 
 3. Directories:
-   - Kernel source directories
-   - Module directories
-   - GRUB configuration directories
-   - EFI system details
+    - Kernel source directories
+    - Module directories
+    - GRUB configuration directories
+    - EFI system details
 
 4. SELinux:
-   - SELinux status and configuration
+    - SELinux status and configuration
 
 5. BIOS / UEFI / SecureBoot:
-   - Boot mode (UEFI or Legacy BIOS)
-   - EFI boot manager details
-   - UEFI variables
-   - Secure Boot status
+    - Boot mode (UEFI or Legacy BIOS)
+    - EFI boot manager details
+    - UEFI variables
+    - Secure Boot status
 
 6. GRUB Configuration Files:
-   - GRUB configuration files and environment
+    - GRUB configuration files and environment
 
 7. Packages:
-   - Required tools
-   - Installed GRUB2 packages
-   - Installed kernel packages
-   - Installed mkinitrd and dracut packages
-   - Installed and available Linux headers
+    - Required tools
+    - Installed GRUB2 packages
+    - Installed kernel packages
+    - Installed mkinitrd and dracut packages
+    - Installed and available Linux headers
 
 8. Initramfs/initrd/Drivers:
-   - Initramfs/initrd contents
-   - Kernel module information
+    - Initramfs/initrd contents
+    - Kernel module information
 
 9. Replication Agent:
-   - AWS replication agent details (if installed)
-   - Running processes related to AWS replication Agent
-   - Network connections related to AWS replication Agent
+    - AWS replication agent details (if installed)
+    - Running processes related to AWS replication Agent
+    - Network connections related to AWS replication Agent
 
 10. Permissions:
-   - File attributes and permissions for critical files
-   - Sudoers configuration
-   - User and group information for 'aws-replication'
-   - The presence and permissions of 'su' and 'sudo'
+    - File attributes and permissions for critical files
+    - Sudoers configuration
+    - User and group information for 'aws-replication'
+    - The presence and permissions of 'su' and 'sudo'
 ============================================
 
  Gathering info ...
