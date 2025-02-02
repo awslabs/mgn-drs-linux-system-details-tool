@@ -2,7 +2,9 @@
 
 ## Description
 
-This script gathers various Linux system details and logs them to an output file. It is intended to be used for troubleshooting issues related to agent installation, replication, or the launch of target instances for AWS MGN and DRS.
+This script gathers various Linux system details and logs them to an output file. It is intended to be used for troubleshooting issues related to agent installation, replication, or the launch of target instances for [AWS MGN](https://aws.amazon.com/application-migration-service/) and [AWS DRS](https://aws.amazon.com/disaster-recovery/).
+
+
 
 
 It checks the following:
