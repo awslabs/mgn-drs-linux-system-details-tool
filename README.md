@@ -34,6 +34,7 @@ It checks the following:
    - Kernel source directories
    - Module directories
    - GRUB configuration directories
+   - EFI system details
 
 4. SELinux:
    - SELinux status and configuration
@@ -41,6 +42,7 @@ It checks the following:
 5. BIOS / UEFI / SecureBoot:
    - Boot mode (UEFI or Legacy BIOS)
    - EFI boot manager details
+   - UEFI variables
    - Secure Boot status
 
 6. GRUB Configuration Files:
@@ -63,10 +65,10 @@ It checks the following:
    - Network connections related to AWS replication Agent
 
 10. Permissions:
-    - File attributes and permissions for critical files
-    - Sudoers configuration
-    - User and group information for 'aws-replication'
-    - The presence and permissions of 'su' and 'sudo'
+   - File attributes and permissions for critical files
+   - Sudoers configuration
+   - User and group information for 'aws-replication'
+   - The presence and permissions of 'su' and 'sudo'
 
 
 ## Usage
@@ -131,6 +133,7 @@ It checks the following:
    - Kernel source directories
    - Module directories
    - GRUB configuration directories
+   - EFI system details
 
 4. SELinux:
    - SELinux status and configuration
@@ -138,6 +141,7 @@ It checks the following:
 5. BIOS / UEFI / SecureBoot:
    - Boot mode (UEFI or Legacy BIOS)
    - EFI boot manager details
+   - UEFI variables
    - Secure Boot status
 
 6. GRUB Configuration Files:
