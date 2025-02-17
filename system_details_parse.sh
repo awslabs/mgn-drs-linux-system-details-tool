@@ -409,6 +409,9 @@ log_command "zypper search -s kernel-default-devel* (----- SUSE -----)" "zypper 
 log_command "apt-cache search linux-headers (----- Debian/Ubuntu -----)" "apt-cache search linux-headers"
 log_command "yum list --showduplicates kernel-uek-devel | expand (----- Oracle with Unbreakable Enterprise Kernel -----) " "yum list --showduplicates kernel-uek-devel | expand"
 
+### RPMDB details
+log_command "ls -lh /var/lib/rpm" "ls -lh /var/lib/rpm"
+log_command "rpm --verify -a" "rpm --verify -a"
 
 echo -e " <<<<<<<<<<<<<<<<<<<<<<<<<< Initramfs/initrd/Drivers  >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"  >> "$LOG_FILE" 2>&1
 
