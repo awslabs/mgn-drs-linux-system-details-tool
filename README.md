@@ -84,6 +84,12 @@ sudo vi system_details_parse.sh
 
 2. Copy the content of the script to the file `system_details_parse.sh`
 
+**Note**: You can directly download the script by using the command below:
+
+```
+wget https://raw.githubusercontent.com/awslabs/mgn-drs-linux-system-details-tool/refs/heads/main/system_details_parse.sh
+```
+
 3. Change the permission of the script:
 
 ```
