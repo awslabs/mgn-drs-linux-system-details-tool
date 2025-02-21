@@ -489,6 +489,7 @@ log_command "grep aws-replication /etc/sudoers" "grep aws-replication /etc/sudoe
 log_command "tail -n +1 /etc/sudoers.d/*" "tail -n +1 /etc/sudoers.d/*"
 log_command "ls -la /etc/sudoers.d/" "ls -la /etc/sudoers.d/"
 log_command "id aws-replication" "id aws-replication"
+log_command "chage -l aws-replication || passwd -S  aws-replication" "chage -l aws-replication 2> /dev/null || passwd -S aws-replication"
 log_command "command -v su" "command -v su"
 log_command "ls -l /bin/su | ls -l /usr/bin/su" "ls -l /bin/su | ls -l /usr/bin/su"
 log_command "command -v sudo" "command -v sudo"
