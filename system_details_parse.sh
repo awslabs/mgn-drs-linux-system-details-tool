@@ -272,6 +272,7 @@ init_system=$(check_init_system)
 if [ "$init_system" == "systemd" ]; then
     log_command "systemctl" "systemctl"
     log_command "systemctl list-unit-files --type=service --state=enabled" "systemctl list-unit-files --type=service --state=enabled"
+    log_command "systemctl --failed" "systemctl --failed"
 elif [ "$init_system" == "sysvinit" ]; then
     log_command "chkconfig --list" "chkconfig --list"
 else
