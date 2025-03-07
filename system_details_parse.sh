@@ -223,6 +223,40 @@ check_boot_device() {
         fi
     fi
     echo -e "\n\n" >> /var/log/system_details.log 2>&1
+    
+    #Calling function to check Grub on boot disk
+    check_grub_installation "$disk_name"
+
+}
+
+#Function that checks grub installation
+check_grub_installation() {
+    local device_name="$1"  # This might be a disk or partition
+    local disk_name
+
+    # Check if the device is an NVMe partition or disk
+    if echo "$device_name" | grep -q "nvme.*p[0-9]\+$"; then
+        # For NVMe partitions (nvme0n1p1 -> nvme0n1)
+        disk_name=$(echo "$device_name" | sed 's/p[0-9]\+$//')
+    elif echo "$device_name" | grep -q "nvme[0-9]\+n[0-9]\+$"; then
+        # Already an NVMe disk (nvme0n1)
+        disk_name="$device_name"
+    elif echo "$device_name" | grep -q "[a-z]\+[0-9]\+$"; then
+        # For traditional partitions (sda1 -> sda)
+        disk_name=$(echo "$device_name" | sed 's/[0-9]\+$//')
+    else
+        # Already a traditional disk (sda) or unknown format
+        disk_name="$device_name"
+    fi
+        local full_disk_path="/dev/${disk_name}"
+
+    echo -e "===== GRUB on Boot disk : ===== \n" >>/var/log/system_details.log 2>&1
+    echo "Original device: $device_name" >>/var/log/system_details.log 2>&1
+    echo "Base disk identified: $disk_name" >>/var/log/system_details.log 2>&1
+    echo "Checking GRUB installation on $full_disk_path" >>/var/log/system_details.log 2>&1
+    echo -e "\n" >> /var/log/system_details.log 2>&1
+    dd if="$full_disk_path" bs=512 count=1 | hexdump -C >>/var/log/system_details.log 2>&1
+    echo -e "\n\n" >> /var/log/system_details.log 2>&1
 }
 
 # Display the banner
