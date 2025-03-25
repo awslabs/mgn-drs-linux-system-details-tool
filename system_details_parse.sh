@@ -229,7 +229,7 @@ check_boot_device() {
 
 }
 
-#Function that checks grub installation
+# Function that checks grub installation (first sector=512 bytes)
 check_grub_installation() {
     local device_name="$1"  # This might be a disk or partition
     local disk_name
@@ -534,4 +534,4 @@ echo -e " -------------------------------------"   >> "$LOG_FILE" 2>&1
 echo -e " -------------------------------------"   >> "$LOG_FILE" 2>&1
 
 echo -e "Finished gathering info \n"
-echo -e "Please attach /var/log/system_details.log to the Support ticket \n"
+echo -e "Please attach '/var/log/system_details.log' to the Support ticket \n"
