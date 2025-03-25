@@ -183,7 +183,7 @@ It checks the following:
 
 Finished gathering info 
 
-Please attach /var/log/system_details.log to the Support ticket 
+Please attach '/var/log/system_details.log' to the Support ticket 
 ```
 
 ## Support
