@@ -255,7 +255,7 @@ check_grub_installation() {
     echo "Base disk identified: $disk_name" >>/var/log/system_details.log 2>&1
     echo "Checking GRUB installation on $full_disk_path" >>/var/log/system_details.log 2>&1
     echo -e "\n" >> /var/log/system_details.log 2>&1
-    dd if="$full_disk_path" bs=512 count=1 | hexdump -C >>/var/log/system_details.log 2>&1
+    { dd if="$full_disk_path" bs=512 count=1 | hexdump -v -C ; } >>/var/log/system_details.log 2>&1
     echo -e "\n\n" >> /var/log/system_details.log 2>&1
 }
 
@@ -263,7 +263,7 @@ check_grub_installation() {
 echo "$banner_text"
 
 LOG_FILE="/var/log/system_details.log"
-REP_AGENT_HOME=/var/lib/aws-replication-agent
+REP_AGENT_HOME=/var/lib/aws-replication-agent 
 
 # Ensure the script is run as root
 if [ "$(id -u)" -ne 0 ]; then
@@ -444,9 +444,6 @@ log_command "zypper search -s kernel-default-devel* (----- SUSE -----)" "zypper 
 log_command "apt-cache search linux-headers (----- Debian/Ubuntu -----)" "apt-cache search linux-headers"
 log_command "yum list --showduplicates kernel-uek-devel | expand (----- Oracle with Unbreakable Enterprise Kernel -----) " "yum list --showduplicates kernel-uek-devel | expand"
 
-### RPMDB details
-log_command "ls -lh /var/lib/rpm" "ls -lh /var/lib/rpm"
-log_command "rpm --verify -a" "rpm --verify -a"
 
 echo -e " <<<<<<<<<<<<<<<<<<<<<<<<<< Initramfs/initrd/Drivers  >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"  >> "$LOG_FILE" 2>&1
 
