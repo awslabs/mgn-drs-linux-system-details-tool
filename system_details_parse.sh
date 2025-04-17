@@ -323,7 +323,7 @@ log_command "env | grep -i proxy" "env | grep -i proxy"
 echo -e "\n <<<<<<<<<<<<<<<<<<<<<<<<<< Disks / Devices / LVM / Multipath / Mount / Memory / Drivers/Modules >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n" >> "$LOG_FILE" 2>&1
 
 check_boot_device
-log_command "lsblk -f" "lsblk -f"
+log_command "lsblk -o +FSTYPE,UUID,PARTUUID" "lsblk -o +FSTYPE,UUID,PARTUUID"
 check_disks_under_1GiB
 log_command "blkid" "blkid"
 log_command "fdisk -l" "fdisk -l"
