@@ -65,6 +65,7 @@ It checks the following:
     - AWS replication agent details (if installed)
     - Running processes related to AWS replication Agent
     - Network connections related to AWS replication Agent
+    - Replication server instances list
 
 10. Permissions:
     - File attributes and permissions for critical files
@@ -169,6 +170,7 @@ It checks the following:
     - AWS replication agent details (if installed)
     - Running processes related to AWS replication Agent
     - Network connections related to AWS replication Agent
+    - Replication server instances list
 
 10. Permissions:
     - File attributes and permissions for critical files
