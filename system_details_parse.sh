@@ -65,6 +65,7 @@ It checks the following:
    - AWS replication agent details (if installed)
    - Running processes related to AWS replication Agent
    - Network connections related to AWS replication Agent
+   - Replication server instances list
 
 10. Permissions:
    - File attributes and permissions for critical files
@@ -257,6 +258,32 @@ check_grub_installation() {
     echo -e "\n" >> /var/log/system_details.log 2>&1
     { dd if="$full_disk_path" bs=512 count=1 | hexdump -v -C ; } >>/var/log/system_details.log 2>&1
     echo -e "\n\n" >> /var/log/system_details.log 2>&1
+}
+
+# Check the list of Replication Server instances
+replication_servers_list() {
+    local logfile="/var/lib/aws-replication-agent/agent.log.0"
+    local output_file="/var/log/system_details.log"
+
+    {
+        echo -e "===== Replication Server instances list : ===== \n"
+
+        # Print header with formatting
+        printf "%-30s %-20s\n" "TIMESTAMP" "REPLICATION SERVER"
+        printf "%-30s %-20s\n" "$(printf '=%.0s' {1..30})" "$(printf '=%.0s' {1..20})"
+
+        while IFS= read -r line; do
+            # Extract timestamp
+            timestamp=$(echo "$line" | grep -o '"@timestamp":"[^"]*"' | cut -d'"' -f4)
+            # Extract instance ID
+            instance_id=$(echo "$line" | grep -o '"args":\["[^"]*"' | grep -o 'i-[a-z0-9]*')
+            if [ ! -z "$timestamp" ] && [ ! -z "$instance_id" ]; then
+                printf "%-30s %-20s\n" "$timestamp" "$instance_id"
+            fi
+        done < <(grep "Connecting to replicator {0}" "$logfile")
+        echo -e "\n"
+
+    } >> "$output_file" 2>&1
 }
 
 # Display the banner
@@ -500,6 +527,7 @@ if [ -e "$REP_AGENT_HOME" ] ; then
         log_command "ps -ef | grep aws- | grep -v grep | wc -l" "ps -ef | grep aws- | grep -v grep | wc -l"
         log_command "netstat -anp | grep -i ':1500'|| ss -anp | grep -i ':1500'" "netstat -anp | grep -i ':1500' || ss -anp | grep -i ':1500'"
         log_command "Active Internet connections (netstat -tupn || ss -tupn)" "netstat -tupn || ss -tupn"
+        replication_servers_list
 
         if [ "$init_system" == "systemd" ]; then
             log_command "systemctl list-units --type=service | grep aws-replication" "systemctl list-units --type=service | grep aws-replication"
