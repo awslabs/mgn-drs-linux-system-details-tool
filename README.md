@@ -73,6 +73,11 @@ It checks the following:
     - User and group information for 'aws-replication'
     - The presence and permissions of 'su' and 'sudo'
 
+11. Endpoint Connectivity:
+    - Checks connectivity to service-specific endpoints (MGN or DRS)
+    - Tests all required S3 bucket endpoints
+    - Tests connection using OpenSSL or curl
+
 ## Usage
 
 To gather system details, create and run a shell script on your source server by following these steps:
@@ -100,8 +105,15 @@ sudo chmod +x system_details_parse.sh
 4. Execute the script:
 
 ```
-sudo ./system_details_parse.sh
+# For MGN service:
+sudo ./system_details_parse.sh --region <REGION> --service mgn
+
+# For DRS service:
+sudo ./system_details_parse.sh --region <REGION> --service drs
 ```
+
+Replace `<REGION>` with your AWS region.
+
 
 ## Sample Output
 
@@ -177,6 +189,11 @@ It checks the following:
     - Sudoers configuration
     - User and group information for 'aws-replication'
     - The presence and permissions of 'su' and 'sudo'
+
+11. Endpoint Connectivity:
+    - Checks connectivity to service-specific endpoints (MGN or DRS)
+    - Tests all required S3 bucket endpoints
+    - Tests connection using OpenSSL or curl
 ============================================
 
  Gathering info ...
