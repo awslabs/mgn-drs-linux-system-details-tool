@@ -72,6 +72,11 @@ It checks the following:
    - Sudoers configuration
    - User and group information for 'aws-replication'
    - The presence and permissions of 'su' and 'sudo'
+
+11. Endpoint Connectivity:
+    - Checks connectivity to service-specific endpoints (MGN or DRS)
+    - Tests all required S3 bucket endpoints
+    - Tests connection using OpenSSL or curl
 ============================================
 
 EOF
@@ -285,6 +290,106 @@ replication_servers_list() {
 
     } >> "$output_file" 2>&1
 }
+
+# Endpoints connectivity check
+REGION=""
+SERVICE=""
+
+usage() {
+    echo "Usage: $0 --region <region> --service <service>"
+    echo "  --region: AWS region (e.g., us-east-1)"
+    echo "  --service: Service type (mgn or drs)"
+    echo ""
+    echo "Example:"
+    echo "  $0 --region us-east-1 --service mgn"
+    echo "  $0 --region eu-west-1 --service drs"
+    exit 1
+}
+
+# Parameter parsing
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --region)
+            REGION="$2"
+            shift 2
+            ;;
+        --service)
+            SERVICE="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown parameter: $1"
+            usage
+            ;;
+    esac
+done
+
+# Validate parameters
+if [[ -z "$REGION" ]] && [[ -z "$SERVICE" ]]; then
+    echo "Error: Both --region and --service parameters are required"
+    usage
+elif [[ -z "$REGION" ]]; then
+    echo "Error: --region parameter is required"
+    usage
+elif [[ -z "$SERVICE" ]]; then
+    echo "Error: --service parameter is required"
+    usage
+fi
+
+# Validate service parameter
+if [[ "$SERVICE" != "mgn" ]] && [[ "$SERVICE" != "drs" ]]; then
+    echo "Error: --service must be either 'mgn' or 'drs'"
+    echo "You provided: $SERVICE"
+    usage
+fi
+
+# Function for Endpoints connectivity check
+check_endpoints_connectivity() {
+    local service=$1
+    local region=$2
+    
+    log_command "Checking connectivity to $service endpoints in region $region" "echo 'Starting endpoint connectivity check...'"
+    
+    declare -a endpoints
+
+    if [ "$service" == "mgn" ]; then
+        endpoints=(
+            "mgn.$region.amazonaws.com"
+            "aws-mgn-clients-$region.s3.$region.amazonaws.com"
+            "aws-mgn-clients-hashes-$region.s3.$region.amazonaws.com"
+            "aws-mgn-internal-$region.s3.$region.amazonaws.com"
+            "aws-mgn-internal-hashes-$region.s3.$region.amazonaws.com"
+            "aws-application-migration-service-$region.s3.$region.amazonaws.com"
+            "aws-application-migration-service-hashes-$region.s3.$region.amazonaws.com"
+            "amazon-ssm-$region.s3.$region.amazonaws.com"
+        )
+    elif [ "$service" == "drs" ]; then
+        endpoints=(
+            "drs.$region.amazonaws.com"
+            "aws-drs-clients-$region.s3.$region.amazonaws.com"
+            "aws-drs-clients-hashes-$region.s3.$region.amazonaws.com"
+            "aws-drs-internal-$region.s3.$region.amazonaws.com"
+            "aws-drs-internal-hashes-$region.s3.$region.amazonaws.com"
+            "aws-elastic-disaster-recovery-$region.s3.$region.amazonaws.com"
+            "aws-elastic-disaster-recovery-hashes-$region.s3.$region.amazonaws.com"
+        )
+    fi
+
+    # Check if either openssl or curl is installed
+    if ! command -v openssl >/dev/null 2>&1 && ! command -v curl >/dev/null 2>&1; then
+        log_command "ERROR: Required tools check" "echo 'Neither OpenSSL nor curl is installed. Cannot check endpoint connectivity. Please install either openssl or curl to perform connectivity checks.'"
+        return 1
+    fi
+
+    for endpoint in "${endpoints[@]}"; do
+        if command -v openssl >/dev/null 2>&1; then
+            log_command "Testing connectivity to '$endpoint' using OpenSSL" "echo -n | openssl s_client -connect $endpoint:443 2>&1"
+        else
+            log_command "Testing connectivity to '$endpoint' using curl" "curl -v -k https://$endpoint 2>&1"
+        fi
+    done
+}
+
 
 # Display the banner
 echo "$banner_text"
@@ -557,6 +662,11 @@ log_command "ls -l /bin/sudo | ls -l /usr/bin/sudo" "ls -l /bin/sudo | ls -l /us
 log_command "su aws-replication -c 'id -u'" "su aws-replication -c 'id -u'"
 log_command "su aws-replication -c 'sudo id -u'" "su aws-replication -c 'sudo id -u'"
 log_command "lsmod | grep CE_AgentDriver" "lsmod | grep CE_AgentDriver"
+
+
+echo -e "\n <<<<<<<<<<<<<<<<<<<<<<<<<< Endpoints Connectivity Check >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n" >> "$LOG_FILE" 2>&1
+
+check_endpoints_connectivity "$SERVICE" "$REGION"
 
 echo -e " -------------------------------------"   >> "$LOG_FILE" 2>&1
 echo -e " -------------------------------------"   >> "$LOG_FILE" 2>&1
