@@ -112,7 +112,7 @@ sudo ./system_details_parse.sh --region <REGION> --service mgn
 sudo ./system_details_parse.sh --region <REGION> --service drs
 ```
 
-Replace `<REGION>` with your AWS region.
+Replace `<REGION>` with your AWS region (example: `us-east-1`).
 
 
 ## Sample Output
