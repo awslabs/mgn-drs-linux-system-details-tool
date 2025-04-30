@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Script version: 1.0.0
+
 banner_text=$(cat <<EOF
 
 ============================================
@@ -420,7 +422,10 @@ echo -e "\n Gathering info ...\n"
 echo -e "-------------------------------------\n"
 
 {
-    echo -e "Attempt $(date +"%y-%m-%d-%T")"
+    echo -e "\n===============================================================" 
+    echo -e "Attempt: $(date +"%Y-%m-%d-%T")"
+    echo -e "Script version: 1.0.0"
+    echo -e "==============================================================="
 } >> "$LOG_FILE" 2>&1
 echo -e "\n" >> "$LOG_FILE" 2>&1
 
