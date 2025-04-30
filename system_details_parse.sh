@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script version: 1.0.0
+# Script version: 1.1
 
 banner_text=$(cat <<EOF
 
@@ -203,47 +203,59 @@ check_boot_device() {
         echo -e "===== Boot device is : ===== \n" 
     } >> /var/log/system_details.log 2>&1
 
-    # Try to get the parent disk name
-    root_device=$(df / | tail -1 | awk '{print $1}')
+    # First try: Find disk that hosts /boot mount point directly
+    boot_partition=$(df /boot | tail -1 | awk '{print $1}')
     disk_name=""
     
-    if [ -n "$root_device" ]; then
-        disk_name=$(lsblk -no pkname "$root_device" 2>/dev/null)
-    fi
-
-    # If first method failed, try the fdisk approach
-    if [ -z "$disk_name" ]; then
-        # Get bootable partition information from fdisk
-        fdisk_output=$(fdisk -l 2>/dev/null | grep '^/dev/[a-z]*[0-9]' | grep '*' | head -1)
-        if [ -n "$fdisk_output" ]; then
-            # Extract just the device path from first column
-            boot_part=$(echo "$fdisk_output" | awk '{print $1}')
-            # Extract disk name from partition (e.g., /dev/sda1 -> sda)
-            disk_name=$(echo "$boot_part" | sed -r 's|/dev/([a-z]+)[0-9]+|\1|')
-            
-            echo "Boot disk determined from bootable partition: $disk_name" >> /var/log/system_details.log 2>&1
-            echo "$fdisk_output" >> /var/log/system_details.log 2>&1
-        fi
-    else
-        # Log regular disk information
-        lsblk -no NAME,MAJ:MIN,RM,SIZE,RO,TYPE | grep "^$disk_name" >> /var/log/system_details.log 2>&1
-    fi
-
-    # If still not found, look for NVMe devices
-    if [ -z "$disk_name" ]; then
-        fdisk_output=$(fdisk -l 2>/dev/null | grep '^/dev/nvme' | grep '*' | head -1)
-        if [ -n "$fdisk_output" ]; then
-            # Extract device path from first column
-            boot_part=$(echo "$fdisk_output" | awk '{print $1}')
-            # Extract disk name from partition (e.g., /dev/nvme0n1p1 -> nvme0n1)
-            disk_name=$(echo "$boot_part" | sed -r 's|/dev/(nvme[0-9]+n[0-9]+)p[0-9]+|\1|')
-            
-            echo "Boot disk determined from NVMe bootable partition: $disk_name" >> /var/log/system_details.log 2>&1
-            echo "$fdisk_output" >> /var/log/system_details.log 2>&1
+    if [ -n "$boot_partition" ]; then
+        # Get parent disk from partition
+        disk_name=$(lsblk -no pkname "$boot_partition" 2>/dev/null)
+        
+        if [ -n "$disk_name" ]; then
+            echo "Boot disk determined from /boot mount point: $disk_name" >> /var/log/system_details.log 2>&1
+            lsblk -no NAME,MAJ:MIN,RM,SIZE,RO,TYPE | grep "^$disk_name" >> /var/log/system_details.log 2>&1
         fi
     fi
 
-    # If both methods failed
+    # Second try: Fall back to root mount if /boot wasn't found or didn't yield a disk
+    if [ -z "$disk_name" ]; then
+        root_partition=$(df / | tail -1 | awk '{print $1}')
+        
+        if [ -n "$root_partition" ]; then
+            disk_name=$(lsblk -no pkname "$root_partition" 2>/dev/null)
+            
+            if [ -n "$disk_name" ]; then
+                echo "Boot disk determined from / mount point: $disk_name" >> /var/log/system_details.log 2>&1
+                lsblk -no NAME,MAJ:MIN,RM,SIZE,RO,TYPE | grep "^$disk_name" >> /var/log/system_details.log 2>&1
+            fi
+        fi
+    fi
+
+    # Third try: Look for bootable flag in fdisk output
+    if [ -z "$disk_name" ]; then
+        # Try standard disks first
+        fdisk_output=$(fdisk -l 2>/dev/null | grep -E '^/dev/[hsv]d[a-z][0-9]' | grep '*' | head -1)
+        if [ -n "$fdisk_output" ]; then
+            boot_part=$(echo "$fdisk_output" | awk '{print $1}')
+            disk_name=$(echo "$boot_part" | sed -r 's|/dev/([hsv]d[a-z])[0-9]+|\1|')
+            
+            echo "Boot disk determined from bootable flag: $disk_name" >> /var/log/system_details.log 2>&1
+            echo "$fdisk_output" >> /var/log/system_details.log 2>&1
+        else
+            # Try NVMe disks
+            fdisk_nvme=$(fdisk -l 2>/dev/null | grep -E '^/dev/nvme[0-9]+n[0-9]+p[0-9]+' | grep '*' | head -1)
+            if [ -n "$fdisk_nvme" ]; then
+                boot_part=$(echo "$fdisk_nvme" | awk '{print $1}')
+                # Handle NVMe disk naming carefully, extracting 'nvme0n1' from '/dev/nvme0n1p1'
+                disk_name=$(echo "$boot_part" | sed -E 's|/dev/(nvme[0-9]+n[0-9]+)p[0-9]+|\1|')
+                
+                echo "Boot disk determined from NVMe bootable flag: $disk_name" >> /var/log/system_details.log 2>&1
+                echo "$fdisk_nvme" >> /var/log/system_details.log 2>&1
+            fi
+        fi
+    fi
+
+    # If all methods failed
     if [ -z "$disk_name" ]; then
         echo "Script was not able to detect the boot device" >> /var/log/system_details.log 2>&1
     fi
@@ -256,9 +268,8 @@ check_boot_device() {
     fi
 }
 
-# Function that checks grub installation (first sector=512 bytes)
 check_grub_installation() {
-    local disk_name="$1"  # This should now be just the disk name (e.g., "sda")
+    local disk_name="$1"  # This should now be just the disk name (e.g., "sda" or "nvme0n1")
     local full_disk_path="/dev/${disk_name}"
 
     echo -e "===== GRUB on Boot disk : ===== \n" >>/var/log/system_details.log 2>&1
@@ -267,7 +278,7 @@ check_grub_installation() {
     echo -e "\n" >> /var/log/system_details.log 2>&1
     
     if [ -e "$full_disk_path" ]; then
-        { dd if="$full_disk_path" bs=512 count=1 | hexdump -v -C ; } >>/var/log/system_details.log 2>&1
+        { dd if="$full_disk_path" bs=512 count=1 2>/dev/null | hexdump -v -C ; } >>/var/log/system_details.log 2>&1
     else
         echo "Error: Device $full_disk_path does not exist" >>/var/log/system_details.log 2>&1
     fi
