@@ -197,71 +197,79 @@ check_disks_under_1GiB() {
 
 # Function to verify the boot device 
 check_boot_device() {
-
     { 
         echo -e "===== Boot device is : ===== \n" 
     } >> /var/log/system_details.log 2>&1
 
-    # Run the first command to get the parent disk name
-    disk_name=$(lsblk -no pkname $(df / | tail -1 | awk '{print $1}'))
-
-    # Check if the output of the first command is empty
-    if [ -z "$disk_name" ]; then
-        # Run the second command if the first command's output is empty
-        disk_name=$(fdisk -l | grep '^/dev/[a-z]*[0-9]' | awk '$2 == "*"')
+    # Try to get the parent disk name
+    root_device=$(df / | tail -1 | awk '{print $1}')
+    disk_name=""
+    
+    if [ -n "$root_device" ]; then
+        disk_name=$(lsblk -no pkname "$root_device" 2>/dev/null)
     fi
 
-    # Check if both commands' outputs are empty
+    # If first method failed, try the fdisk approach
     if [ -z "$disk_name" ]; then
-        {
-            echo "Script was not able to detect the boot device"
-        } >> /var/log/system_details.log 2>&1
+        # Get bootable partition information from fdisk
+        fdisk_output=$(fdisk -l 2>/dev/null | grep '^/dev/[a-z]*[0-9]' | grep '*' | head -1)
+        if [ -n "$fdisk_output" ]; then
+            # Extract just the device path from first column
+            boot_part=$(echo "$fdisk_output" | awk '{print $1}')
+            # Extract disk name from partition (e.g., /dev/sda1 -> sda)
+            disk_name=$(echo "$boot_part" | sed -r 's|/dev/([a-z]+)[0-9]+|\1|')
+            
+            echo "Boot disk determined from bootable partition: $disk_name" >> /var/log/system_details.log 2>&1
+            echo "$fdisk_output" >> /var/log/system_details.log 2>&1
+        fi
     else
-        # If the first command was successful, get the full disk information
-        if [ -n "$(lsblk -no pkname $(df / | tail -1 | awk '{print $1}'))" ]; then
-            {
-                lsblk -no NAME,MAJ:MIN,RM,SIZE,RO,TYPE | grep "^$disk_name" 
-            }  >> /var/log/system_details.log 2>&1
-        else
-            {
-                fdisk -l | grep '^/dev/[a-z]*[0-9]' | awk '$2 == "*"' >> /var/log/system_details.log 2>&1
-            }  >> /var/log/system_details.log 2>&1
+        # Log regular disk information
+        lsblk -no NAME,MAJ:MIN,RM,SIZE,RO,TYPE | grep "^$disk_name" >> /var/log/system_details.log 2>&1
+    fi
+
+    # If still not found, look for NVMe devices
+    if [ -z "$disk_name" ]; then
+        fdisk_output=$(fdisk -l 2>/dev/null | grep '^/dev/nvme' | grep '*' | head -1)
+        if [ -n "$fdisk_output" ]; then
+            # Extract device path from first column
+            boot_part=$(echo "$fdisk_output" | awk '{print $1}')
+            # Extract disk name from partition (e.g., /dev/nvme0n1p1 -> nvme0n1)
+            disk_name=$(echo "$boot_part" | sed -r 's|/dev/(nvme[0-9]+n[0-9]+)p[0-9]+|\1|')
+            
+            echo "Boot disk determined from NVMe bootable partition: $disk_name" >> /var/log/system_details.log 2>&1
+            echo "$fdisk_output" >> /var/log/system_details.log 2>&1
         fi
     fi
+
+    # If both methods failed
+    if [ -z "$disk_name" ]; then
+        echo "Script was not able to detect the boot device" >> /var/log/system_details.log 2>&1
+    fi
+    
     echo -e "\n\n" >> /var/log/system_details.log 2>&1
     
-    #Calling function to check Grub on boot disk
-    check_grub_installation "$disk_name"
-
+    # Call function to check Grub on boot disk if we found a disk
+    if [ -n "$disk_name" ]; then
+        check_grub_installation "$disk_name"
+    fi
 }
 
 # Function that checks grub installation (first sector=512 bytes)
 check_grub_installation() {
-    local device_name="$1"  # This might be a disk or partition
-    local disk_name
-
-    # Check if the device is an NVMe partition or disk
-    if echo "$device_name" | grep -q "nvme.*p[0-9]\+$"; then
-        # For NVMe partitions (nvme0n1p1 -> nvme0n1)
-        disk_name=$(echo "$device_name" | sed 's/p[0-9]\+$//')
-    elif echo "$device_name" | grep -q "nvme[0-9]\+n[0-9]\+$"; then
-        # Already an NVMe disk (nvme0n1)
-        disk_name="$device_name"
-    elif echo "$device_name" | grep -q "[a-z]\+[0-9]\+$"; then
-        # For traditional partitions (sda1 -> sda)
-        disk_name=$(echo "$device_name" | sed 's/[0-9]\+$//')
-    else
-        # Already a traditional disk (sda) or unknown format
-        disk_name="$device_name"
-    fi
-        local full_disk_path="/dev/${disk_name}"
+    local disk_name="$1"  # This should now be just the disk name (e.g., "sda")
+    local full_disk_path="/dev/${disk_name}"
 
     echo -e "===== GRUB on Boot disk : ===== \n" >>/var/log/system_details.log 2>&1
-    echo "Original device: $device_name" >>/var/log/system_details.log 2>&1
-    echo "Base disk identified: $disk_name" >>/var/log/system_details.log 2>&1
+    echo "Disk name: $disk_name" >>/var/log/system_details.log 2>&1
     echo "Checking GRUB installation on $full_disk_path" >>/var/log/system_details.log 2>&1
     echo -e "\n" >> /var/log/system_details.log 2>&1
-    { dd if="$full_disk_path" bs=512 count=1 | hexdump -v -C ; } >>/var/log/system_details.log 2>&1
+    
+    if [ -e "$full_disk_path" ]; then
+        { dd if="$full_disk_path" bs=512 count=1 | hexdump -v -C ; } >>/var/log/system_details.log 2>&1
+    else
+        echo "Error: Device $full_disk_path does not exist" >>/var/log/system_details.log 2>&1
+    fi
+    
     echo -e "\n\n" >> /var/log/system_details.log 2>&1
 }
 
