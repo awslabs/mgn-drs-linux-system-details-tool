@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script version: 1.1
+# Script version: 1.2
 
 banner_text=$(cat <<EOF
 
@@ -286,6 +286,41 @@ check_grub_installation() {
     echo -e "\n\n" >> /var/log/system_details.log 2>&1
 }
 
+
+# Function to check GRUB installation and version
+check_grub_installation_version() {
+    {
+        echo -e "===== GRUB Installation and Version Check : ===== \n"
+        
+        if command -v grub-install &> /dev/null; then
+            echo "GRUB is installed (grub-install found)\n"
+            echo "--> GRUB Version:"
+            grub-install --version
+            echo -e "\n"
+             
+        elif command -v grub2-install &> /dev/null; then
+            echo "GRUB2 is installed (grub2-install found)\n"
+            echo "--> GRUB2 Version:"
+            grub2-install --version
+            echo -e "\n"
+            
+        else
+            echo "Warning: Neither grub-install nor grub2-install was found on the system\n"
+        fi
+        
+        # Check for GRUB modules directory
+        #echo -e "** GRUB Modules Directory Check: **"
+        for dir in "/usr/lib/grub" "/usr/lib/grub2" "/boot/grub" "/boot/grub2" "/usr/lib/grub/x86_64-efi/"; do
+            echo -e "===== ls -lah $dir =====\n"
+            ls -lah $dir
+            echo -e "\n"
+        done
+        
+        echo -e "\n"
+    } >> /var/log/system_details.log 2>&1
+}
+
+
 # Check the list of Replication Server instances
 replication_servers_list() {
     local logfile="/var/lib/aws-replication-agent/agent.log.0"
@@ -435,7 +470,7 @@ echo -e "-------------------------------------\n"
 {
     echo -e "\n===============================================================" 
     echo -e "Attempt: $(date +"%Y-%m-%d-%T")"
-    echo -e "Script version: 1.1"
+    echo -e "Script version: 1.2"
     echo -e "==============================================================="
 } >> "$LOG_FILE" 2>&1
 echo -e "\n" >> "$LOG_FILE" 2>&1
@@ -510,15 +545,13 @@ log_command "tail -n +1 /etc/udev/rules.d/*" "tail -n +1 /etc/udev/rules.d/*"
 
 echo -e "\n <<<<<<<<<<<<<<<<<<<<<<<<<< Directories >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"  >> "$LOG_FILE" 2>&1
 
+log_command "ls -lah /boot" "ls -lah /boot"
 log_command "ls -lah /usr/src/" "ls -lah /usr/src/"
 log_command "ls -lah /usr/src/kernels/" "ls -lah /usr/src/kernels/"
 log_command "ls -lah /usr/src/kernels/*" "ls -lah /usr/src/kernels/*"
 log_command "ls -lah /lib/modules" "ls -lah /lib/modules"
 log_command "ls -lah /lib/modules/*" "ls -lah /lib/modules/*"
 log_command "ls -lah /lib/modules/*/build" "ls -lah /lib/modules/*/build"
-log_command "ls -la /usr/lib/grub" "ls -la /usr/lib/grub"
-log_command "ls -la /usr/share/grub2/" "ls -la /usr/share/grub2/" 
-log_command "ls -la /usr/lib/grub/x86_64-efi/" "ls -la /usr/lib/grub/x86_64-efi/" 
 
 
 echo -e "\n <<<<<<<<<<<<<<<<<<<<<<<<<< SELinux >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"  >> "$LOG_FILE" 2>&1
@@ -558,6 +591,7 @@ for grub_file in "${grub_files[@]}"; do
     fi
 done
 
+check_grub_installation_version
 
 echo -e " <<<<<<<<<<<<<<<<<<<<<<<<<< Packages >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"   >> "$LOG_FILE" 2>&1
 
@@ -646,7 +680,6 @@ if [ -e "$REP_AGENT_HOME" ] ; then
 
         log_command "df -hT $REP_AGENT_HOME" "df -hT $REP_AGENT_HOME"
         log_command "ls -lah $REP_AGENT_HOME" "ls -lah $REP_AGENT_HOME"
-        log_command "ls -lah /boot" "ls -lah /boot"
         log_command "cat $REP_AGENT_HOME/agent.config" "cat $REP_AGENT_HOME/agent.config | sed 's/\(\"awsSecretAccessKey\": \"\)[^\"]*\"/\1************\"/'"
         log_command "cat $REP_AGENT_HOME/VERSION"  "cat $REP_AGENT_HOME/VERSION"
         log_command "modinfo aws_replication_driver" "modinfo aws_replication_driver"
