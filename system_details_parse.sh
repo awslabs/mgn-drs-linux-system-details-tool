@@ -489,6 +489,7 @@ log_command "route -n || ip route" "route -n || ip route"
 log_command "cat /etc/hosts" "cat /etc/hosts"
 log_command "cat /etc/resolv.conf" "cat /etc/resolv.conf"
 log_command "ls -l /etc/resolv.conf" "ls -l /etc/resolv.conf"
+log_command "lsattr /etc/resolv.conf" "lsattr /etc/resolv.conf"
 check_os_firewall
 
 # Check init system and log appropriate command
