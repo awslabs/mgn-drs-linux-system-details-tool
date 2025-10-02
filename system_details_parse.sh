@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script version: 1.2
+# Script version: 1.3
 
 banner_text=$(cat <<EOF
 
@@ -542,6 +542,7 @@ log_command "ls -lart /dev" "ls -lart /dev"
 log_command "ls -l /sys/module/" "ls -l /sys/module/" 
 log_command "ls -la /etc/udev/rules.d/" "ls -la /etc/udev/rules.d/"
 log_command "tail -n +1 /etc/udev/rules.d/*" "tail -n +1 /etc/udev/rules.d/*"
+log_command "grep -vE '^\s*#|^\s*$' /etc/lvm/lvm.conf" "grep -vE '^\s*#|^\s*$' /etc/lvm/lvm.conf" 
 
 
 echo -e "\n <<<<<<<<<<<<<<<<<<<<<<<<<< Directories >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"  >> "$LOG_FILE" 2>&1
