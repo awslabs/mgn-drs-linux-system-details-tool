@@ -515,12 +515,15 @@ log_command "env | grep -i proxy" "env | grep -i proxy"
 echo -e "\n <<<<<<<<<<<<<<<<<<<<<<<<<< Disks / Devices / LVM / Multipath / Mount / Memory / Drivers/Modules >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n" >> "$LOG_FILE" 2>&1
 
 check_boot_device
-log_command "lsblk -o +FSTYPE,UUID,PARTUUID" "lsblk -o +FSTYPE,UUID,PARTUUID"
+log_command "lsblk -o +FSTYPE,UUID" "lsblk -o +FSTYPE,UUID"
 check_disks_under_1GiB
 log_command "blkid" "blkid"
 log_command "fdisk -l" "fdisk -l"
 log_command "parted -ls" "parted -ls"
 log_command "fstab" "cat /etc/fstab"
+log_command "pvs" "pvs"
+log_command "vgs" "vgs"
+log_command "lvs" "lvs"
 log_command "pvdisplay -vv" "pvdisplay -vv"
 log_command "vgdisplay -v" "vgdisplay -v"
 log_command "lvdisplay -vm" "lvdisplay -vm"
