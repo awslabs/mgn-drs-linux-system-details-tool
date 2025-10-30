@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script version: 1.4
+# Script version: 1.5
 
 banner_text=$(cat <<EOF
 
@@ -470,7 +470,7 @@ echo -e "-------------------------------------\n"
 {
     echo -e "\n===============================================================" 
     echo -e "Attempt: $(date +"%Y-%m-%d-%T")"
-    echo -e "Script version: 1.4"
+    echo -e "Script version: 1.5"
     echo -e "==============================================================="
 } >> "$LOG_FILE" 2>&1
 echo -e "\n" >> "$LOG_FILE" 2>&1
@@ -533,6 +533,7 @@ log_command "multipath -ll" "multipath -ll"
 log_command "find /sys/block -ls" "find /sys/block -ls"
 log_command "find /dev/mapper -ls" "find /dev/mapper -ls"
 log_command "powermt display dev=all" "powermt display dev=all"
+log_command "lspci" "lspci"
 log_command "mount" "mount"
 log_command "mount | grep /tmp" "mount | grep /tmp"
 log_command "df -hT" "df -hT"
