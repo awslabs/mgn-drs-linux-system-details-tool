@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script version: 1.3
+# Script version: 1.4
 
 banner_text=$(cat <<EOF
 
@@ -470,7 +470,7 @@ echo -e "-------------------------------------\n"
 {
     echo -e "\n===============================================================" 
     echo -e "Attempt: $(date +"%Y-%m-%d-%T")"
-    echo -e "Script version: 1.3"
+    echo -e "Script version: 1.4"
     echo -e "==============================================================="
 } >> "$LOG_FILE" 2>&1
 echo -e "\n" >> "$LOG_FILE" 2>&1
@@ -687,6 +687,7 @@ if [ -e "$REP_AGENT_HOME" ] ; then
         log_command "ls -lah $REP_AGENT_HOME" "ls -lah $REP_AGENT_HOME"
         log_command "cat $REP_AGENT_HOME/agent.config" "cat $REP_AGENT_HOME/agent.config | sed 's/\(\"awsSecretAccessKey\": \"\)[^\"]*\"/\1************\"/'"
         log_command "cat $REP_AGENT_HOME/VERSION"  "cat $REP_AGENT_HOME/VERSION"
+        log_command "cat $REP_AGENT_HOME/aws-replication-prepare.env"  "cat $REP_AGENT_HOME/aws-replication-prepare.env"
         log_command "modinfo aws_replication_driver" "modinfo aws_replication_driver"
         log_command "ps -u aws-replication" "ps -u aws-replication"
         log_command "ls -l /dev | grep aws_replication" "ls -l /dev | grep aws_replication"
