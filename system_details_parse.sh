@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script version: 1.5
+# Script version: 1.6
 
 banner_text=$(cat <<EOF
 
@@ -470,7 +470,7 @@ echo -e "-------------------------------------\n"
 {
     echo -e "\n===============================================================" 
     echo -e "Attempt: $(date +"%Y-%m-%d-%T")"
-    echo -e "Script version: 1.5"
+    echo -e "Script version: 1.6"
     echo -e "==============================================================="
 } >> "$LOG_FILE" 2>&1
 echo -e "\n" >> "$LOG_FILE" 2>&1
@@ -490,6 +490,7 @@ log_command "cat /etc/hosts" "cat /etc/hosts"
 log_command "cat /etc/resolv.conf" "cat /etc/resolv.conf"
 log_command "ls -l /etc/resolv.conf" "ls -l /etc/resolv.conf"
 log_command "lsattr /etc/resolv.conf" "lsattr /etc/resolv.conf"
+log_command "NetworkManager --print-config" "NetworkManager --print-config"
 check_os_firewall
 
 # Check init system and log appropriate command
