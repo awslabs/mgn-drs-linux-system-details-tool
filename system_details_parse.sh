@@ -553,6 +553,8 @@ log_command "grep -vE '^\s*#|^\s*$' /etc/lvm/lvm.conf" "grep -vE '^\s*#|^\s*$' /
 echo -e "\n <<<<<<<<<<<<<<<<<<<<<<<<<< Directories >>>>>>>>>>>>>>>>>>>>>>>>>> \n\n"  >> "$LOG_FILE" 2>&1
 
 log_command "ls -lah /boot" "ls -lah /boot"
+log_command "ls -lRt /boot/efi" "ls -lRt /boot/efi"
+log_command "ls -lRt /boot/loader/entries/" "ls -lRt /boot/loader/entries/"
 log_command "ls -lah /usr/src/" "ls -lah /usr/src/"
 log_command "ls -lah /usr/src/kernels/" "ls -lah /usr/src/kernels/"
 log_command "ls -lah /usr/src/kernels/*" "ls -lah /usr/src/kernels/*"
