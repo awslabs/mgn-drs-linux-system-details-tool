@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script version: 1.6
+# Script version: 1.7
 
 banner_text=$(cat <<EOF
 
@@ -470,7 +470,7 @@ echo -e "-------------------------------------\n"
 {
     echo -e "\n===============================================================" 
     echo -e "Attempt: $(date +"%Y-%m-%d-%T")"
-    echo -e "Script version: 1.6"
+    echo -e "Script version: 1.7"
     echo -e "==============================================================="
 } >> "$LOG_FILE" 2>&1
 echo -e "\n" >> "$LOG_FILE" 2>&1
@@ -554,6 +554,7 @@ echo -e "\n <<<<<<<<<<<<<<<<<<<<<<<<<< Directories >>>>>>>>>>>>>>>>>>>>>>>>>> \n
 
 log_command "ls -lah /boot" "ls -lah /boot"
 log_command "ls -lRt /boot/efi" "ls -lRt /boot/efi"
+log_command "ls -lah /boot/grub2/i386-pc/" "ls -lah /boot/grub2/i386-pc/"
 log_command "ls -lRt /boot/loader/entries/" "ls -lRt /boot/loader/entries/"
 log_command "ls -lah /usr/src/" "ls -lah /usr/src/"
 log_command "ls -lah /usr/src/kernels/" "ls -lah /usr/src/kernels/"
